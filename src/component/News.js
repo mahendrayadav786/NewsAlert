@@ -22,8 +22,6 @@ loading : true
  }
  
 
-
-
  async componentDidMount(){
 
 let url = "https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105";
