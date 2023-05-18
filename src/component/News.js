@@ -43,7 +43,7 @@ super();
 this.state = {
 
 articles: [],
-loading : false
+loading : true
 
 
 }
