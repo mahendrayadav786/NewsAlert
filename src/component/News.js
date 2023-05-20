@@ -13,7 +13,8 @@ super();
 this.state = {
 
 articles: [],
-loading : true
+loading : true,
+page :1
 
 
 }
@@ -24,7 +25,7 @@ loading : true
 
  async componentDidMount(){
 
-let url = "https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105";
+let url = "https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105&pageSize=20";
 
 let data = await fetch(url)
 
@@ -33,11 +34,68 @@ let parsedData = await data.json();
 
 console.log(parsedData);
 
-this.setState({articles:parsedData.articles});
+this.setState({
+  
+  
+  articles:parsedData.articles,
+  totalResults: parsedData.totalResults
+
+
+
+});
 
  }
 
+ handleNext= async ()=>{
+
+  if (this.state.page + 1 > Math.ceil(this.state.totalResults/20)){
+
+
+
+
+
+  }
+  else{
+let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page +1}&pageSize=20`;
+
+let data = await fetch(url)
+
+let parsedData = await data.json();
+
+
+this.setState({
+  
+  page : this.state.page +1,
+
+  articles:parsedData.articles
+
+});
+  }
+
+ }
  
+handlePrevious = async()=>{
+
+  
+let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page -1}&pageSize=20`;
+
+let data = await fetch(url)
+
+let parsedData = await data.json();
+
+
+this.setState({
+  
+  page : this.state.page -1,
+
+  articles:parsedData.articles
+
+});
+
+
+}
+
+
     render() {
     return (
 
@@ -57,6 +115,19 @@ return <div className="col-md-4"   key ={element.url}>
 })}
 
 </div>
+
+
+<div className="container d-flex justify-content-between">
+
+<button disabled = {this.state.page<=1}type="button" className="btn btn-dark " onClick={this.handlePrevious}>Previous</button>
+
+<button type="button" className="btn btn-dark " onClick={this.handleNext}>Next</button>
+
+</div>
+
+
+
+
 
 </div>
    
