@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 import NewsItem from './NewsItem'
-
+import Spinner from './Spinner'
 
 export default class News extends Component {
    
@@ -25,8 +25,8 @@ page :1
 
  async componentDidMount(){
 
-let url = "https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105&pageSize=20";
-
+let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105&pageSize=${this.props.pageSize}`;
+this.setState({loding:true})
 let data = await fetch(url)
 
 let parsedData = await data.json();
@@ -38,7 +38,8 @@ this.setState({
   
   
   articles:parsedData.articles,
-  totalResults: parsedData.totalResults
+  totalResults: parsedData.totalResults,
+  loading: false
 
 
 
@@ -48,16 +49,12 @@ this.setState({
 
  handleNext= async ()=>{
 
-  if (this.state.page + 1 > Math.ceil(this.state.totalResults/20)){
+  if (!(this.state.page + 1 > Math.ceil(this.state.totalResults/20))){
 
+  
+let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page +1}&pageSize=${this.props.pageSize}`;
 
-
-
-
-  }
-  else{
-let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page +1}&pageSize=20`;
-
+this.setState({loading:true})
 let data = await fetch(url)
 
 let parsedData = await data.json();
@@ -67,28 +64,31 @@ this.setState({
   
   page : this.state.page +1,
 
-  articles:parsedData.articles
+  articles:parsedData.articles,
+  loading: false
 
 });
-  }
+}
 
  }
  
 handlePrevious = async()=>{
 
   
-let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page -1}&pageSize=20`;
-
+let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page -1}&pageSize=${this.props.pageSize}`;
+this.setState({loding:true})
 let data = await fetch(url)
 
 let parsedData = await data.json();
 
 
-this.setState({
+this.setState({ 
   
   page : this.state.page -1,
 
-  articles:parsedData.articles
+  articles:parsedData.articles,
+  loading:false
+
 
 });
 
@@ -101,9 +101,10 @@ this.setState({
 
 <div className="container my-3" >
 
+{this.state.loading && <Spinner/>}
 <div className="row">
 
-{this.state.articles.map((element)=>{
+{!this.state.loading && this.state.articles.map((element)=>{
 
 return <div className="col-md-4"   key ={element.url}>
 
@@ -121,13 +122,9 @@ return <div className="col-md-4"   key ={element.url}>
 
 <button disabled = {this.state.page<=1}type="button" className="btn btn-dark " onClick={this.handlePrevious}>Previous</button>
 
-<button type="button" className="btn btn-dark " onClick={this.handleNext}>Next</button>
+<button disabled = {(this.state.page + 1 > Math.ceil(this.state.totalResults/20)) } type="button" className="btn btn-dark " onClick={this.handleNext}>Next</button>
 
 </div>
-
-
-
-
 
 </div>
    
