@@ -132,7 +132,7 @@ this.setState({
 
 return <div className="col-md-4"   key ={element.url}>
 
-<NewsItem    title = {element.title?element.title:""} description = {element.description?element.description:""} imageUrl = {element.urlToImage?element.urlToImage:"https://akm-img-a-in.tosshub.com/indiatoday/images/story/202305/axiom_2-sixteen_nine.jpg?VersionId=YvwakZeKyfp4.MhuGLrdDsBivZl7aruV"} newsUrl={element.url}/>
+<NewsItem    title = {element.title?element.title:""} description = {element.description?element.description:""} imageUrl = {element.urlToImage?element.urlToImage:"https://akm-img-a-in.tosshub.com/indiatoday/images/story/202305/axiom_2-sixteen_nine.jpg?VersionId=YvwakZeKyfp4.MhuGLrdDsBivZl7aruV"} newsUrl={element.url}  author={element.author} date ={element.publishedAt}/>
 
 
 </div>
