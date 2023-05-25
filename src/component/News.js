@@ -8,6 +8,7 @@ export default class News extends Component {
     country: "in",
     pageSize: 8,
     category: "general",
+    
   };
   static propTypes = {
     country: PropTypes.string,
@@ -37,7 +38,7 @@ export default class News extends Component {
 
 
   async updateNews() {
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
 
     this.setState({ loading: true });
     let data = await fetch(url);
@@ -112,10 +113,6 @@ export default class News extends Component {
     this.setState({ page: this.state.page - 1 });
     this.updateNews();
   };
-
-
-
-  
 
   render() {
     return (
