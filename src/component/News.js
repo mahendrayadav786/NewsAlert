@@ -1,79 +1,64 @@
-import React, { Component } from "react";
+import React, { useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
 
-export default class News extends Component {
-  static defaultProps = {
-    country: "in",
-    pageSize: 8,
-    category: "general",
-    
-  };
-  static propTypes = {
-    country: PropTypes.string,
-    pageSize: PropTypes.number,
-    category: PropTypes.string,
-  };
-
-  capitalizeFirstLetter = (string)=> {
+const News =(props)=> {
+ 
+  const [articles, setArticles] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [totalResults, setTotalResults]= useState(0)
+  // document.title=`${this.capitalizeFirstLetter(props.category)}-NewsAlert`;
+  
+  const capitalizeFirstLetter = (string)=> {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+  const  updateNews=async ()=> {
+    let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pageSize=${props.pageSize}`;
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      articles: [],
-      loading: true,
-      page: 1,
-    };
-  
-  document.title=`${this.capitalizeFirstLetter(this.props.category)}-NewsAlert`;
-
-
-
-  }
-
-
-  async updateNews() {
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
-
-    this.setState({ loading: true });
+    
+    setLoading(true);
     let data = await fetch(url);
 
     let parsedData = await data.json();
-    console.log(parsedData);
-
-    this.setState({
-      articles: parsedData.articles,
-      loading: false,
-    });
-  }
-  async componentDidMount() {
-    // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=e684c8cd563c4ed0a212dac7f22dc105&pageSize=${this.props.pageSize}`;
-    // this.setState({loding:true})
-    // let data = await fetch(url)
-
-    // let parsedData = await data.json();
-
     // console.log(parsedData);
-
-    // this.setState({
-
-    //   articles:parsedData.articles,
-    //   totalResults: parsedData.totalResults,
-    //   loading: false
-
-    // });
-    this.updateNews();
+    
+   setArticles(parsedData.articles);
+   setLoading(false);
+   setTotalResults(parsedData.totalResults)
+   
   }
 
-  handleNext = async () => {
+  useEffect(()=>{
+
+    updateNews();
+
+  }, [])
+  // async componentDidMount() {
+  //   // let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=e684c8cd563c4ed0a212dac7f22dc105&pageSize=${props.pageSize}`;
+  //   // this.setState({loding:true})
+  //   // let data = await fetch(url)
+
+  //   // let parsedData = await data.json();
+
+  //   // console.log(parsedData);
+
+  //   // this.setState({
+
+  //   //   articles:parsedData.articles,
+  //   //   totalResults: parsedData.totalResults,
+  //   //   loading: false
+
+  //   // });
+   
+  // }
+
+  const handleNext = async () => {
     //   if (!(this.state.page + 1 > Math.ceil(this.state.totalResults/20))){
 
-    // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page +1}&pageSize=${this.props.pageSize}`;
+    // let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page +1}&pageSize=${props.pageSize}`;
 
     // this.setState({loading:true})
     // let data = await fetch(url)
@@ -89,13 +74,12 @@ export default class News extends Component {
 
     // });
     // }
-
-    this.setState({ page: this.state.page + 1 });
-    this.updateNews();
+setPage(page+1)
+    updateNews();
   };
 
-  handlePrevious = async () => {
-    // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page -1}&pageSize=${this.props.pageSize}`;
+  const handlePrevious = async () => {
+    // let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=e684c8cd563c4ed0a212dac7f22dc105&page=${this.state.page -1}&pageSize=${props.pageSize}`;
     // this.setState({loding:true})
     // let data = await fetch(url)
 
@@ -109,19 +93,18 @@ export default class News extends Component {
     //   loading:false
 
     // });
-
-    this.setState({ page: this.state.page - 1 });
-    this.updateNews();
+setPage(page-1)
+    
+  updateNews();
   };
 
-  render() {
     return (
       <div className="container my-3">
-         <h1 className = "text-center" style={{margin:"35px 0"}}>NewsAlert-Top {this.capitalizeFirstLetter(this.props.category)}</h1> 
-        {this.state.loading && <Spinner />}
+         <h1 className = "text-center" style={{margin:"35px 0"}}>NewsAlert-Top {capitalizeFirstLetter(props.category)}</h1> 
+        {loading && <Spinner />}
         <div className="row">
-          {!this.state.loading &&
-            this.state.articles.map((element) => {
+          {!loading &&
+            articles.map((element) => {
               return (
                 <div className="col-md-4" key={element.url}>
                   <NewsItem
@@ -143,26 +126,46 @@ export default class News extends Component {
 
         <div className="container d-flex justify-content-between">
           <button
-            disabled={this.state.page <= 1}
+            disabled={page <= 1}
             type="button"
             className="btn btn-dark "
-            onClick={this.handlePrevious}
+            onClick={handlePrevious}
           >
             Previous
           </button>
 
           <button
             disabled={
-              this.state.page + 1 > Math.ceil(this.state.totalResults / 20)
+              page + 1 > Math.ceil(totalResults / 20)
             }
             type="button"
             className="btn btn-dark "
-            onClick={this.handleNext}
+            onClick={handleNext}
           >
             Next
           </button>
         </div>
       </div>
     );
-  }
+  
+
+
+
 }
+
+
+News.defaultProps = {
+  country: "in",
+  pageSize: 8,
+  category: "general",
+  
+};
+
+News.propTypes = {
+  country: PropTypes.string,
+  pageSize: PropTypes.number,
+  category: PropTypes.string,
+};
+
+
+export default News
